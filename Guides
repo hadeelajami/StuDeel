@@ -1,0 +1,72 @@
+import React, { useState, useEffect } from "react";
+import { Institution } from "@/entities/Institution";
+import { Card, CardContent } from "@/components/ui/card";
+import { BookOpen, School } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import ReactMarkdown from 'react-markdown';
+
+
+export default function GuidesPage({ language }) {
+  const [institutions, setInstitutions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadInstitutions();
+  }, []);
+
+  const loadInstitutions = async () => {
+    setIsLoading(true);
+    const data = await Institution.list();
+    setInstitutions(data.filter(inst => inst.guide_he || inst.guide_ar));
+    setIsLoading(false);
+  };
+
+  const t = (he, ar) => language === 'he' ? he : ar;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+           <BookOpen className="w-16 h-16 mx-auto text-purple-600 mb-4" />
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">{t('מדריכים אוניברסיטאיים', 'أدلة الجامعات')}</h1>
+          <p className="text-lg text-slate-600">{t('התהליכים והנהלים הרשמיים בכל מוסד', 'الإجراءات والأنظمة الرسمية في كل مؤسسة')}</p>
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-4">
+            {Array(3).fill(0).map((_, i) => <div key={i} className="h-16 bg-slate-200 rounded-lg animate-pulse"></div>)}
+          </div>
+        ) : institutions.length === 0 ? (
+          <p className="text-slate-500 text-center py-8">{t('לא נמצאו מדריכים.', 'لم يتم العثور على أدلة.')}</p>
+        ) : (
+          <Accordion type="single" collapsible className="w-full space-y-3">
+            {institutions.map(inst => (
+              <AccordionItem key={inst.id} value={inst.id} className="border-none">
+                <Card className="bg-white/80 backdrop-blur-sm overflow-hidden">
+                  <AccordionTrigger className="p-6 text-lg font-semibold hover:no-underline">
+                     <div className="flex items-center gap-3">
+                         <School className="w-5 h-5 text-purple-700"/>
+                         {t(inst.name_he, inst.name_ar)}
+                     </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-6">
+                    <div className="prose prose-slate max-w-none prose-p:my-2 prose-headings:my-3">
+                        <ReactMarkdown>
+                            {t(inst.guide_he, inst.guide_ar)}
+                        </ReactMarkdown>
+                    </div>
+                  </AccordionContent>
+                </Card>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
+      </div>
+    </div>
+  );
+}
