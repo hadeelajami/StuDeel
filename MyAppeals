@@ -1,0 +1,109 @@
+import React, { useState, useEffect } from "react";
+import { Appeal } from "@/entities/Appeal";
+import { Institution } from "@/entities/Institution";
+import { User } from "@/entities/User";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { FileText, Calendar, Clock, CheckCircle, XCircle, Eye } from "lucide-react";
+import { format } from "date-fns";
+import { he, ar } from "date-fns/locale";
+
+import AppealCard from "../components/appeals/AppealCard";
+import AppealFilters from "../components/appeals/AppealFilters";
+import EmptyState from "../components/appeals/EmptyState";
+
+export default function MyAppeals({ language }) {
+  const [appeals, setAppeals] = useState([]);
+  const [institutions, setInstitutions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
+  const [selectedAppeal, setSelectedAppeal] = useState(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const user = await User.me();
+      const [appealsData, institutionsData] = await Promise.all([
+        Appeal.filter({ created_by: user.email }, "-created_date"),
+        Institution.list()
+      ]);
+      setAppeals(appealsData);
+      setInstitutions(institutionsData);
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const filteredAppeals = filter === "all"
+    ? appeals
+    : appeals.filter(a => a.status === filter);
+
+  const getInstitution = (institutionId) => {
+    return institutions.find(i => i.id === institutionId);
+  };
+
+  const t = (he, ar) => language === 'he' ? he : ar;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">{t("הערעורים שלי", "استئنافاتي")}</h1>
+          <p className="text-slate-600">{t("ניהול וצפייה בכל הערעורים שיצרת", "إدارة وعرض جميع الاستئنافات التي أنشأتها")}</p>
+        </div>
+
+        <AppealFilters
+          currentFilter={filter}
+          onFilterChange={setFilter}
+          counts={{
+            all: appeals.length,
+            draft: appeals.filter(a => a.status === "draft").length,
+            submitted: appeals.filter(a => a.status === "submitted" || a.status === "pending").length,
+            approved: appeals.filter(a => a.status === "approved").length,
+            rejected: appeals.filter(a => a.status === "rejected").length,
+          }}
+          language={language}
+        />
+
+        {isLoading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader className="space-y-2">
+                  <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="h-3 bg-slate-200 rounded"></div>
+                    <div className="h-3 bg-slate-200 rounded w-5/6"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : filteredAppeals.length === 0 ? (
+          <EmptyState filter={filter} language={language} />
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            {filteredAppeals.map((appeal) => (
+              <AppealCard
+                key={appeal.id}
+                appeal={appeal}
+                institution={getInstitution(appeal.institution_id)}
+                onSelect={setSelectedAppeal}
+                language={language}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
