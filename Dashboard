@@ -1,0 +1,86 @@
+import React, { useState, useEffect } from "react";
+import { Appeal } from "@/entities/Appeal";
+import { User } from "@/entities/User";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Plus, FileText, Clock, CheckCircle, AlertCircle, TrendingUp } from "lucide-react";
+import { format } from "date-fns";
+import { he, ar } from "date-fns/locale";
+
+import WelcomeHero from "../components/dashboard/WelcomeHero";
+import QuickStats from "../components/dashboard/QuickStats";
+import RecentAppeals from "../components/dashboard/RecentAppeals";
+import UpcomingDeadlines from "../components/dashboard/UpcomingDeadlines";
+
+export default function Dashboard({ language }) {
+  const [appeals, setAppeals] = useState([]);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const currentUser = await User.me();
+      setUser(currentUser);
+      const userAppeals = await Appeal.filter({ created_by: currentUser.email }, "-created_date");
+      setAppeals(userAppeals);
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const stats = {
+    total: appeals.length,
+    draft: appeals.filter(a => a.status === "draft").length,
+    submitted: appeals.filter(a => a.status === "submitted" || a.status === "pending").length,
+    approved: appeals.filter(a => a.status === "approved").length,
+  };
+
+  const upcomingDeadlines = appeals
+    .filter(a => a.deadline && a.status !== "approved" && a.status !== "rejected")
+    .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+    .slice(0, 3);
+
+  const quickStatsData = [
+    { title_he: "סה״כ ערעורים", title_ar: "إجمالي الاستئنافات", value: stats.total, icon: FileText, color: "blue" },
+    { title_he: "טיוטות", title_ar: "مسودات", value: stats.draft, icon: Clock, color: "yellow" },
+    { title_he: "הוגשו", title_ar: "مُرسلة", value: stats.submitted, icon: TrendingUp, color: "purple" },
+    { title_he: "אושרו", title_ar: "مُوافق عليها", value: stats.approved, icon: CheckCircle, color: "green" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <WelcomeHero userName={user?.full_name} language={language} />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {quickStatsData.map((stat, index) => (
+            <QuickStats
+              key={index}
+              title={language === 'he' ? stat.title_he : stat.title_ar}
+              value={stat.value}
+              icon={stat.icon}
+              color={stat.color}
+            />
+          ))}
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <RecentAppeals appeals={appeals.slice(0, 5)} isLoading={isLoading} language={language} />
+          </div>
+          <div>
+            <UpcomingDeadlines deadlines={upcomingDeadlines} isLoading={isLoading} language={language} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
