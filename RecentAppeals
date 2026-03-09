@@ -1,0 +1,92 @@
+
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { FileText, Calendar } from "lucide-react";
+import { format } from "date-fns";
+import { he, ar } from "date-fns/locale";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+
+export default function RecentAppeals({ appeals, isLoading, language }) {
+  const t = (he, ar) => language === 'he' ? he : ar;
+
+  const statusMap = {
+    draft: { label_he: "טיוטה", label_ar: "مسودة", color: "bg-gray-100 text-gray-800" },
+    ready: { label_he: "מוכן", label_ar: "جاهز", color: "bg-blue-100 text-blue-800" },
+    submitted: { label_he: "הוגש", label_ar: "مُرسل", color: "bg-purple-100 text-purple-800" },
+    pending: { label_he: "ממתין", label_ar: "قيد الانتظار", color: "bg-yellow-100 text-yellow-800" },
+    approved: { label_he: "אושר", label_ar: "مُوافق عليه", color: "bg-green-100 text-green-800" },
+    rejected: { label_he: "נדחה", label_ar: "مرفوض", color: "bg-red-100 text-red-800" },
+  };
+
+  const appealTypeMap = {
+    grade_appeal_exam: { he: "ערעור על ציון מבחן", ar: "استئناف على علامة امتحان" },
+    grade_appeal_assignment: { he: "ערעור על ציון עבודה", ar: "استئناف على علامة وظيفة" },
+    attendance_appeal: { he: "ערעור על נוכחות", ar: "استئناف على الحضور" },
+    extension_request: { he: "בקשת הארכת מועד", ar: "طلب تمديد موعد" },
+    committee_decision_appeal: { he: "ערעור על החלטת ועדה", ar: "استئناف على قرار لجنة" },
+    study_break_request: { he: "בקשה להפסקת לימודים", ar: "طلب إيقاف دراسة" },
+    disciplinary_appeal: { he: "ערעור על החלטת משמעת", ar: "استئناف على قرار تأديبي" },
+    other: { he: "אחר", ar: "آخر" },
+  };
+  
+  const getStatusLabel = (status) => statusMap[status]?.[language === 'he' ? 'label_he' : 'label_ar'] || status;
+  const getAppealTypeLabel = (type) => appealTypeMap[type]?.[language] || type;
+
+  return (
+    <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+      <CardHeader className="border-b border-slate-100">
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <FileText className="w-5 h-5 text-blue-600" />
+          {t("ערעורים אחרונים", "أحدث الاستئنافات")}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-6">
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="animate-pulse p-4 border border-slate-100 rounded-xl">
+                <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        ) : appeals.length === 0 ? (
+          <div className="text-center py-12">
+            <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-500 mb-4">{t("אין ערעורים עדיין", "لا توجد استئنافات بعد")}</p>
+            <Link to={createPageUrl("NewAppeal")}>
+              <span className="text-blue-600 hover:text-blue-700 font-medium">{t("צור ערעור ראשון", "أنشئ أول استئناف لك")}</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {appeals.map((appeal) => (
+              <div
+                key={appeal.id}
+                className="p-4 border border-slate-100 rounded-xl hover:shadow-md transition-all duration-200 hover:border-blue-200"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-semibold text-slate-900">
+                    {getAppealTypeLabel(appeal.appeal_type)}
+                  </h3>
+                  <Badge className={statusMap[appeal.status]?.color}>
+                    {getStatusLabel(appeal.status)}
+                  </Badge>
+                </div>
+                {appeal.course_name && (
+                  <p className="text-sm text-slate-600 mb-2">{appeal.course_name}</p>
+                )}
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <Calendar className="w-3 h-3" />
+                  {format(new Date(appeal.created_date), "d בMMMM, yyyy", { locale: language === 'he' ? he : ar })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
