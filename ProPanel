@@ -1,0 +1,86 @@
+import React from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Crown, BadgeCheck, GraduationCap, Gavel } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+
+export default function ProPanel({ language = "he" }) {
+  const t = (he, ar) => (language === "he" ? he : ar);
+
+  const options = [
+    {
+      icon: BadgeCheck,
+      title_he: "מומחה ערעורים",
+      title_ar: "خبير استئناف",
+      desc_he: "סקירה מדויקת ושיפור ניסוח המכתב והטיעונים.",
+      desc_ar: "مراجعة دقيقة وتحسين صياغة الرسالة والحجج.",
+    },
+    {
+      icon: GraduationCap,
+      title_he: "יועץ אקדמי",
+      title_ar: "مستشار أكاديمي",
+      desc_he: "הכוונה בהתאם לנהלים האקדמיים והמסלול שלך.",
+      desc_ar: "إرشاد وفق الإجراءات الأكاديمية ومسارك الدراسي.",
+    },
+    {
+      icon: Gavel,
+      title_he: "עו״ד (פרו)",
+      title_ar: "محامٍ (احترافي)",
+      desc_he: "ייעוץ משפטי מקצועי לתיקים מורכבים.",
+      desc_ar: "استشارة قانونية احترافية للحالات المعقدة.",
+    },
+  ];
+
+  return (
+    <Card className="h-full w-full p-4 bg-gradient-to-b from-amber-50 to-white border-amber-200 shadow-lg rounded-2xl">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center">
+          <Crown className="w-5 h-5 text-amber-600" />
+        </div>
+        <h3 className="text-lg font-bold text-slate-900">
+          {t("בדיקה מקצועית (Pro)", "مراجعة احترافية (Pro)")}
+        </h3>
+      </div>
+
+      <p className="text-sm text-slate-600 mb-4">
+        {t(
+          "שדרג לסקירה מקצועית לשיפור הסיכוי לאישור הערעור.",
+          "قم بالترقية لمراجعة احترافية لرفع فرص قبول الاستئناف."
+        )}
+      </p>
+
+      <div className="space-y-3 mb-4">
+        {options.map((opt, idx) => {
+          const Icon = opt.icon;
+          return (
+            <div
+              key={idx}
+              className="rounded-xl border border-amber-200/70 bg-white/70 px-3 py-3 hover:bg-white transition"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-4 h-4 text-amber-700" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {t(opt.title_he, opt.title_ar)}
+                  </p>
+                  <p className="text-xs text-slate-600">
+                    {t(opt.desc_he, opt.desc_ar)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <Link to={createPageUrl("PremiumConsultation")}>
+        <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white rounded-xl">
+          {t("שדרג ל-Pro", "ترقية إلى Pro")}
+        </Button>
+      </Link>
+    </Card>
+  );
+}
