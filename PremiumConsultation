@@ -1,0 +1,85 @@
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Crown, BadgeCheck, GraduationCap, Gavel } from "lucide-react";
+
+export default function PremiumConsultation({ language = "he" }) {
+  const t = (he, ar) => (language === "he" ? he : ar);
+
+  const services = [
+    {
+      key: "appeal_expert",
+      icon: BadgeCheck,
+      title_he: "מומחה ערעורים",
+      title_ar: "خبير استئناف",
+      desc_he: "סקירה מלאה של המכתב וניסוח מחודש לחיזוק הסיכויים.",
+      desc_ar: "مراجعة كاملة للرسالة وإعادة الصياغة لتعزيز فرص القبول.",
+    },
+    {
+      key: "academic_advisor",
+      icon: GraduationCap,
+      title_he: "יועץ אקדמי",
+      title_ar: "مستشار أكاديمي",
+      desc_he: "התאמת הערעור לנהלים ולמוסד שלך.",
+      desc_ar: "مواءمة الاستئناف مع الإجراءات والمؤسسة الخاصة بك.",
+    },
+    {
+      key: "lawyer",
+      icon: Gavel,
+      title_he: "עו״ד (פרו)",
+      title_ar: "محامٍ (احترافي)",
+      desc_he: "ליווי משפטי מקצועי למצבים מורכבים.",
+      desc_ar: "مرافقة قانونية احترافية للحالات المعقدة.",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-2xl bg-amber-500/15 flex items-center justify-center">
+            <Crown className="w-5 h-5 text-amber-600" />
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+            {t("בדיקה מקצועית (Pro)", "مراجعة احترافية (Pro)")}
+          </h1>
+        </div>
+        <p className="text-slate-600 mb-8">
+          {t(
+            "בחרו את סוג הייעוץ המתאים לכם ושדרגו את סיכויי ההצלחה.",
+            "اختر نوع الاستشارة المناسب لك وارفَع فرص النجاح."
+          )}
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-4">
+          {services.map((s) => {
+            const Icon = s.icon;
+            return (
+              <Card key={s.key} className="bg-white/90 border-amber-100 hover:shadow-lg transition">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-amber-700" />
+                    </div>
+                    <CardTitle className="text-base">
+                      {t(s.title_he, s.title_ar)}
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-600">{t(s.desc_he, s.desc_ar)}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <div className="mt-8">
+          <Button className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl">
+            {t("קבעו ייעוץ מקצועי", "احجز استشارة مدفوعة")}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
