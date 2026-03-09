@@ -1,0 +1,51 @@
+
+import React from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+export default function StudentInfoForm({ data, institutions, faculties, onChange, language }) {
+  const t = (he, ar) => language === 'he' ? he : ar;
+
+  // Ensure faculty resets if it's not part of the current institution's list
+  React.useEffect(() => {
+    // Only reset if a faculty_id is currently selected and it's not found in the new faculties list
+    if (data.faculty_id && !faculties.some(f => String(f.id) === String(data.faculty_id))) {
+      onChange({ faculty_id: "" });
+    }
+  }, [data.institution_id, faculties, data.faculty_id, onChange]);
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-slate-900 mb-2">{t("פרטי הסטודנט", "تفاصيل الطالب")}</h2>
+      <p className="text-slate-600 mb-6">{t("מלא את הפרטים האישיים שלך", "املأ تفاصيلك الشخصية")}</p>
+      
+      <div className="space-y-6">
+        <div>
+          <Label htmlFor="student_name">{t("שם מלא", "الاسم الكامل")}</Label>
+          <Input
+            id="student_name"
+            value={data.student_name || ""}
+            onChange={(e) => onChange({ student_name: e.target.value })}
+            placeholder={t("שם פרטי ושם משפחה", "الاسم الأول واسم العائلة")}
+            className="mt-2"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="student_id">{t("תעודת זהות", "رقم الهوية")}</Label>
+          <Input
+            id="student_id"
+            value={data.student_id || ""}
+            onChange={(e) => onChange({ student_id: e.target.value })}
+            placeholder="123456789"
+            className="mt-2"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="student_email">{t("דואר אלקטרוני", "البريد الإلكتروني")}</Label>
+          <Input
+            id="student_email"
+            type="email"
+ 
