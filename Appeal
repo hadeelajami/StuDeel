@@ -1,0 +1,135 @@
+{
+  "name": "Appeal",
+  "type": "object",
+  "properties": {
+    "student_name": {
+      "type": "string",
+      "description": "Full name of the student"
+    },
+    "student_id": {
+      "type": "string",
+      "description": "Student ID number"
+    },
+    "student_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Student contact email"
+    },
+    "student_phone": {
+      "type": "string",
+      "description": "Student phone number"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to Institution"
+    },
+    "faculty_id": {
+      "type": "string",
+      "description": "Reference to Faculty"
+    },
+    "appeal_type": {
+      "type": "string",
+      "enum": [
+        "grade_appeal_exam",
+        "grade_appeal_assignment",
+        "attendance_appeal",
+        "extension_request",
+        "committee_decision_appeal",
+        "study_break_request",
+        "disciplinary_appeal",
+        "other"
+      ],
+      "description": "Type of appeal"
+    },
+    "course_name": {
+      "type": "string",
+      "description": "Name of the course if applicable"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Course code if applicable"
+    },
+    "semester": {
+      "type": "string",
+      "description": "Semester/term"
+    },
+    "appeal_reason": {
+      "type": "string",
+      "description": "Main reason for the appeal"
+    },
+    "detailed_explanation": {
+      "type": "string",
+      "description": "Detailed explanation and arguments"
+    },
+    "supporting_documents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs to uploaded supporting documents"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "he",
+        "ar"
+      ],
+      "default": "he",
+      "description": "Language of the appeal"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "ready",
+        "submitted",
+        "approved",
+        "rejected",
+        "pending",
+        "pending_review",
+        "review_complete"
+      ],
+      "default": "draft",
+      "description": "Appeal status"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Submission deadline"
+    },
+    "generated_letter": {
+      "type": "string",
+      "description": "Generated appeal letter content"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when appeal was submitted"
+    },
+    "is_premium_review": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag for premium review service"
+    },
+    "expert_feedback": {
+      "type": "string",
+      "description": "Feedback from the academic expert"
+    },
+    "review_service": {
+      "type": "string",
+      "enum": [
+        "appeal_expert",
+        "academic_advisor",
+        "lawyer"
+      ],
+      "default": "appeal_expert",
+      "description": "Selected premium review service type"
+    }
+  },
+  "required": [
+    "student_name",
+    "student_id",
+    "institution_id",
+    "appeal_type"
+  ]
+}
