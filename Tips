@@ -1,0 +1,82 @@
+import React, { useState, useEffect } from "react";
+import { Tip } from "@/entities/Tip";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThumbsUp, ThumbsDown, Award, GraduationCap } from "lucide-react";
+
+export default function TipsPage({ language }) {
+  const [tips, setTips] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadTips();
+  }, []);
+
+  const loadTips = async () => {
+    setIsLoading(true);
+    const tipsData = await Tip.list();
+    setTips(tipsData);
+    setIsLoading(false);
+  };
+  
+  const t = (he, ar) => language === 'he' ? he : ar;
+
+  const categories = [
+    { value: "dos", title_he: "מה כדאי לעשות", title_ar: "ما يجب فعله", icon: ThumbsUp },
+    { value: "donts", title_he: "ממה להימנע", title_ar: "ما يجب تجنبه", icon: ThumbsDown },
+    { value: "successful_examples", title_he: "דוגמאות מוצלחות", title_ar: "أمثلة ناجحة", icon: Award },
+  ];
+  
+  const renderTips = (category) => {
+    const filteredTips = tips.filter(tip => tip.category === category);
+    if (isLoading) {
+      return Array(3).fill(0).map((_, i) => <div key={i} className="h-20 bg-slate-200 rounded-lg animate-pulse"></div>)
+    }
+    if (filteredTips.length === 0) {
+      return <p className="text-slate-500 text-center py-8">{t('לא נמצאו טיפים בקטגוריה זו.', 'لم يتم العثور على نصائح في هذه الفئة.')}</p>
+    }
+    return filteredTips.map(tip => (
+      <Card key={tip.id} className="bg-white/80">
+        <CardHeader>
+          <CardTitle className="text-lg">{t(tip.title_he, tip.title_ar)}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-slate-600">{t(tip.content_he, tip.content_ar)}</p>
+        </CardContent>
+      </Card>
+    ));
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+           <GraduationCap className="w-16 h-16 mx-auto text-blue-600 mb-4" />
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">{t('מאגר טיפים ודוגמאות', 'بنك النصائح والأمثلة')}</h1>
+          <p className="text-lg text-slate-600">{t('למד מניסיון של אחרים כדי לכתוב ערעור מנצח', 'تعلم من تجارب الآخرين لكتابة استئناف فائز')}</p>
+        </div>
+
+        <Tabs defaultValue="dos" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm p-1 rounded-xl shadow-sm">
+            {categories.map(cat => {
+              const Icon = cat.icon;
+              return (
+                <TabsTrigger key={cat.value} value={cat.value} className="flex items-center gap-2 rounded-lg">
+                  <Icon className="w-4 h-4" />
+                  {t(cat.title_he, cat.title_ar)}
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+          {categories.map(cat => (
+            <TabsContent key={cat.value} value={cat.value}>
+              <div className="space-y-4 mt-6">
+                {renderTips(cat.value)}
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+    </div>
+  );
+}
