@@ -1,0 +1,86 @@
+import React from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
+export default function AppealDetailsForm({ data, onChange, language }) {
+  const t = (he, ar) => language === 'he' ? he : ar;
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-slate-900 mb-2">{t("פרטי הערעור", "تفاصيل الاستئناف")}</h2>
+      <p className="text-slate-600 mb-6">{t("פרט את הנושא והטיעונים שלך", "فصّل موضوعك وحججك")}</p>
+      
+      <div className="space-y-6">
+        <div>
+          <Label htmlFor="course_name">{t("שם הקורס", "اسم المساق")}</Label>
+          <Input
+            id="course_name"
+            value={data.course_name || ""}
+            onChange={(e) => onChange({ course_name: e.target.value })}
+            placeholder={t('לדוגמה: "מבוא למדעי המחשב"', 'مثال: "مقدمة في علوم الحاسوب"')}
+            className="mt-2"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="course_code">{t("קוד קורס", "رمز المساق")}</Label>
+          <Input
+            id="course_code"
+            value={data.course_code || ""}
+            onChange={(e) => onChange({ course_code: e.target.value })}
+            placeholder={t('לדוגמה: "12345"', 'مثال: "12345"')}
+            className="mt-2"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="semester">{t("סמסטר", "الفصل الدراسي")}</Label>
+          <Input
+            id="semester"
+            value={data.semester || ""}
+            onChange={(e) => onChange({ semester: e.target.value })}
+            placeholder={t('לדוגמה: "סמסטר א תשפ״ד"', 'مثال: "الفصل الأول 2023-2024"')}
+            className="mt-2"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="deadline">{t("מועד הגשה אחרון", "الموعد النهائي للتقديم")}</Label>
+          <Input
+            id="deadline"
+            type="date"
+            value={data.deadline || ""}
+            onChange={(e) => onChange({ deadline: e.target.value })}
+            className="mt-2"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="appeal_reason">{t("סיבת הערעור (תמציתית)", "سبب الاستئناف (موجز)")}</Label>
+          <Input
+            id="appeal_reason"
+            value={data.appeal_reason || ""}
+            onChange={(e) => onChange({ appeal_reason: e.target.value })}
+            placeholder={t('לדוגמה: "טעות בבדיקת הבחינה"', 'مثال: "خطأ في فحص الامتحان"')}
+            className="mt-2"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="detailed_explanation">{t("הסבר מפורט", "شرح مفصل")}</Label>
+          <Textarea
+            id="detailed_explanation"
+            value={data.detailed_explanation || ""}
+            onChange={(e) => onChange({ detailed_explanation: e.target.value })}
+            placeholder={t("פרט את כל הטיעונים, העובדות והנסיבות הרלוונטיות לערעור שלך...", "فصّل جميع الحجج والحقائق والظروف ذات الصلة باستئنافك...")}
+            className="mt-2 min-h-[200px]"
+          />
+          <p className="text-xs text-slate-500 mt-2">
+            {t("ככל שהסברך מפורט יותר, המכתב יהיה משכנע יותר", "كلما كان شرحك أكثر تفصيلاً، كانت الرسالة أكثر إقناعًا")}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
