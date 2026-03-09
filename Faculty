@@ -1,0 +1,23 @@
+{
+  "name": "Faculty",
+  "type": "object",
+  "properties": {
+    "name_he": {
+      "type": "string",
+      "description": "Faculty name in Hebrew"
+    },
+    "name_ar": {
+      "type": "string",
+      "description": "Faculty name in Arabic"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to the parent Institution"
+    }
+  },
+  "required": [
+    "name_he",
+    "name_ar",
+    "institution_id"
+  ]
+}
