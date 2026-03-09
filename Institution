@@ -1,0 +1,52 @@
+{
+  "name": "Institution",
+  "type": "object",
+  "properties": {
+    "name_he": {
+      "type": "string",
+      "description": "Institution name in Hebrew"
+    },
+    "name_ar": {
+      "type": "string",
+      "description": "Institution name in Arabic"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL of the institution's logo"
+    },
+    "code": {
+      "type": "string",
+      "description": "Unique institution code"
+    },
+    "appeal_deadline_days": {
+      "type": "number",
+      "description": "Number of days allowed for appeals",
+      "default": 30
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Official appeals email address"
+    },
+    "address_he": {
+      "type": "string",
+      "description": "Institution address in Hebrew"
+    },
+    "address_ar": {
+      "type": "string",
+      "description": "Institution address in Arabic"
+    },
+    "guide_he": {
+      "type": "string",
+      "description": "Guide for the appeal process in Hebrew"
+    },
+    "guide_ar": {
+      "type": "string",
+      "description": "Guide for the appeal process in Arabic"
+    }
+  },
+  "required": [
+    "name_he",
+    "name_ar",
+    "code"
+  ]
+}
