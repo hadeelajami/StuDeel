@@ -1,0 +1,40 @@
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Plus, Sparkles } from "lucide-react";
+
+export default function WelcomeHero({ userName, language }) {
+  const t = (he, ar) => language === 'he' ? he : ar;
+  
+  return (
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-8 md:p-12 text-white shadow-2xl">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+      
+      <div className="relative z-10">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="w-6 h-6" />
+          <span className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">
+            {t("פלטפורמת הערעורים החכמה", "منصة الاستئنافات الذكية")}
+          </span>
+        </div>
+        
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          {userName ? `${t("שלום,", "أهلاً،")} ${userName}` : t('ברוכים הבאים ל-StuDeel', 'أهلاً بكم في StuDeel')}
+        </h1>
+        
+        <p className="text-xl text-blue-100 mb-8 max-w-2xl">
+          {t("צור ערעורים אקדמיים מקצועיים בקלות. תבניות חכמות, ייצוא לכל פורמט, ותזכורות מובנות.", "أنشئ استئنافات أكاديمية احترافية بسهولة. قوالب ذكية، تصدير لجميع الصيغ، وتذكيرات مدمجة.")}
+        </p>
+        
+        <Link to={createPageUrl("NewAppeal")}>
+          <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 shadow-lg rounded-xl">
+            <Plus className="w-5 h-5 ml-2" />
+            {t("צור ערעור חדש", "إنشاء استئناف جديد")}
+          </Button>
+        </Link>
+      </div>
+    </div>
+  );
+}
