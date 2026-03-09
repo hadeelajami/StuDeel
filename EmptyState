@@ -1,0 +1,51 @@
+import React from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { FileText, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+
+export default function EmptyState({ filter, language }) {
+  const t = (he, ar) => language === 'he' ? he : ar;
+
+  const messages = {
+    all: {
+      title: t("אין ערעורים עדיין", "لا توجد استئنافات بعد"),
+      description: t("צור את הערעור הראשון שלך והתחל להגן על זכויותיך", "أنشئ استئنافك الأول وابدأ في الدفاع عن حقوقك"),
+    },
+    draft: {
+      title: t("אין טיוטות", "لا توجد مسودات"),
+      description: t("כל הערעורים שלך מוכנים או הוגשו", "جميع استئنافاتك جاهزة أو تم إرسالها"),
+    },
+    submitted: {
+      title: t("אין ערעורים שהוגשו", "لا توجد استئنافات مُرسلة"),
+      description: t("ערעורים שהוגשו יופיעו כאן", "الاستئنافات المُرسلة ستظهر هنا"),
+    },
+    approved: {
+      title: t("אין ערעורים מאושרים", "لا توجد استئنافات تمت الموافقة عليها"),
+      description: t("ערעורים שאושרו יופיעו כאן", "الاستئنافات الموافق عليها ستظهر هنا"),
+    },
+    rejected: {
+      title: t("אין ערעורים שנדחו", "لا توجد استئنافات مرفوضة"),
+      description: t("ערעורים שנדחו יופיעו כאן", "الاستئنافات المرفوضة ستظهر هنا"),
+    },
+  };
+
+  const message = messages[filter] || messages.all;
+
+  return (
+    <Card className="p-12 text-center border-2 border-dashed border-slate-300 bg-white/50">
+      <FileText className="w-20 h-20 text-slate-300 mx-auto mb-4" />
+      <h3 className="text-2xl font-bold text-slate-900 mb-2">{message.title}</h3>
+      <p className="text-slate-600 mb-6">{message.description}</p>
+      {filter === "all" && (
+        <Link to={createPageUrl("NewAppeal")}>
+          <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl">
+            <Plus className="w-5 h-5 ml-2" />
+            {t("צור ערעור חדש", "إنشاء استئناف جديد")}
+          </Button>
+        </Link>
+      )}
+    </Card>
+  );
+}
