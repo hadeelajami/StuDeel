@@ -1,0 +1,31 @@
+{
+  "name": "Tip",
+  "type": "object",
+  "properties": {
+    "title_he": {
+      "type": "string"
+    },
+    "title_ar": {
+      "type": "string"
+    },
+    "content_he": {
+      "type": "string"
+    },
+    "content_ar": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "dos",
+        "donts",
+        "successful_examples"
+      ]
+    }
+  },
+  "required": [
+    "title_he",
+    "content_he",
+    "category"
+  ]
+}
