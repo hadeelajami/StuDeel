@@ -1,0 +1,9 @@
+import React from 'react'
+export default function Community({ language }) {
+  const t = (he, ar) => language === 'he' ? he : ar;
+  return (
+    <div className="flex items-center justify-center h-full">
+        <p className="text-2xl text-slate-500">{t('דף קהילה בבנייה...', 'صفحة المجتمع قيد الإنشاء ...')}</p>
+    </div>
+  )
+}
