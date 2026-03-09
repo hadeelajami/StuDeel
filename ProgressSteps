@@ -1,0 +1,51 @@
+import React from "react";
+import { Check } from "lucide-react";
+
+export default function ProgressSteps({ currentStep, language }) {
+  const steps = [
+    { number: 1, label_he: "סוג ערעור", label_ar: "نوع الاستئناف" },
+    { number: 2, label_he: "פרטים אישיים", label_ar: "التفاصيل الشخصية" },
+    { number: 3, label_he: "תוכן הערעור", label_ar: "محتوى الاستئناف" },
+    { number: 4, label_he: "צפייה וייצוא", label_ar: "معاينة وتصدير" },
+  ];
+
+  return (
+    <div className="flex items-center justify-between max-w-3xl mx-auto">
+      {steps.map((step, index) => (
+        <React.Fragment key={step.number}>
+          <div className="flex flex-col items-center text-center">
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+                currentStep > step.number
+                  ? "bg-green-500 text-white shadow-lg"
+                  : currentStep === step.number
+                  ? "bg-blue-600 text-white shadow-lg scale-110"
+                  : "bg-slate-200 text-slate-500"
+              }`}
+            >
+              {currentStep > step.number ? (
+                <Check className="w-6 h-6" />
+              ) : (
+                step.number
+              )}
+            </div>
+            <p
+              className={`text-xs mt-2 font-medium w-20 ${
+                currentStep >= step.number ? "text-slate-900" : "text-slate-500"
+              }`}
+            >
+              {language === 'he' ? step.label_he : step.label_ar}
+            </p>
+          </div>
+          {index < steps.length - 1 && (
+            <div
+              className={`flex-1 h-1 mx-2 rounded transition-all duration-300 ${
+                currentStep > step.number ? "bg-green-500" : "bg-slate-200"
+              }`}
+            ></div>
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
