@@ -1,0 +1,125 @@
+
+import React from "react";
+import { Card } from "@/components/ui/card";
+import { FileSignature, ClipboardCheck, UserCheck, CalendarPlus, Landmark, PauseCircle, Gavel } from "lucide-react";
+
+const appealTypes = [
+  {
+    value: "grade_appeal_exam",
+    label_he: "ערעור על ציון מבחן",
+    label_ar: "استئناف على علامة امتحان",
+    description_he: "על ציון בבחינת סוף סמסטר, מועד ב' או אמצע",
+    description_ar: "على علامة امتحان نهاية الفصل، موعد ب أو منتصف الفصل",
+    icon: FileSignature,
+    color: "blue",
+  },
+  {
+    value: "grade_appeal_assignment",
+    label_he: "ערעור על ציון עבודה",
+    label_ar: "استئناف على علامة وظيفة",
+    description_he: "על ציון בעבודה, פרויקט, תרגיל או מטלה אחרת",
+    description_ar: "على علامة في وظيفة، مشروع، تمرين أو مهمة أخرى",
+    icon: ClipboardCheck,
+    color: "cyan",
+  },
+  {
+    value: "attendance_appeal",
+    label_he: "ערעור על נוכחות",
+    label_ar: "استئناف على الحضور",
+    description_he: "על רישום היעדרויות או אי עמידה בחובת נוכחות",
+    description_ar: "على تسجيل الغياب أو عدم استيفاء واجب الحضور",
+    icon: UserCheck,
+    color: "green",
+  },
+  {
+    value: "extension_request",
+    label_he: "בקשת הארכת מועד",
+    label_ar: "طلب تمديد موعد",
+    description_he: "בקשה להארכת מועד הגשה של עבודה או מטלה",
+    description_ar: "طلب لتمديد موعد تقديم وظيفة أو مهمة",
+    icon: CalendarPlus,
+    color: "orange",
+  },
+  {
+    value: "committee_decision_appeal",
+    label_he: "ערעור על החלטת ועדה",
+    label_ar: "استئناف على قرار لجنة",
+    description_he: "על החלטת ועדה אקדמית, ועדת הוראה וכו'",
+    description_ar: "على قرار لجنة أكاديمية، لجنة تدريس، إلخ",
+    icon: Landmark,
+    color: "purple",
+  },
+   {
+    value: "study_break_request",
+    label_he: "בקשה להפסקת לימודים",
+    label_ar: "طلب إيقاف الدراسة",
+    description_he: "בקשה להקפאת לימודים לסמסטר או יותר",
+    description_ar: "طلب لتجميد الدراسة لفصل دراسي أو أكثر",
+    icon: PauseCircle,
+    color: "yellow",
+  },
+  {
+    value: "disciplinary_appeal",
+    label_he: "ערעור על החלטת משמעת",
+    label_ar: "استئناف على قرار تأديبي",
+    description_he: "על עונש או החלטה של ועדת משמעת",
+    description_ar: "على عقوبة أو قرار من لجنة تأديبية",
+    icon: Gavel,
+    color: "red",
+  },
+];
+
+const colorMap = {
+  blue: "hover:border-blue-400 hover:bg-blue-50",
+  cyan: "hover:border-cyan-400 hover:bg-cyan-50",
+  green: "hover:border-green-400 hover:bg-green-50",
+  orange: "hover:border-orange-400 hover:bg-orange-50",
+  purple: "hover:border-purple-400 hover:bg-purple-50",
+  yellow: "hover:border-yellow-400 hover:bg-yellow-50",
+  red: "hover:border-red-400 hover:bg-red-50",
+  // The 'indigo' color was part of the original map but not used in the new appealTypes,
+  // it's kept here for completeness based on the provided colorMap in the outline.
+  indigo: "hover:border-indigo-400 hover:bg-indigo-50",
+};
+
+export default function AppealTypeSelector({ value, onChange, language }) {
+  const t = (he, ar) => language === 'he' ? he : ar;
+  
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-slate-900 mb-2">{t("בחר סוג ערעור", "اختر نوع الاستئناف")}</h2>
+      <p className="text-slate-600 mb-6">{t("בחר את סוג הערעור המתאים למצבך", "اختر نوع الاستئناف الذي يناسب حالتك")}</p>
+      
+      <div className="grid md:grid-cols-2 gap-4">
+        {appealTypes.map((type) => {
+          const Icon = type.icon;
+          return (
+            <Card
+              key={type.value}
+              onClick={() => onChange(type.value)}
+              className={`p-6 cursor-pointer border-2 transition-all duration-200 ${
+                value === type.value
+                  ? "border-blue-500 bg-blue-50 shadow-lg"
+                  : `border-slate-200 ${colorMap[type.color]}`
+              }`}
+            >
+              <div className="flex items-start gap-4">
+                <div className={`p-3 rounded-xl ${
+                  value === type.value ? "bg-blue-100" : "bg-slate-100"
+                }`}>
+                  <Icon className={`w-6 h-6 ${
+                    value === type.value ? "text-blue-600" : "text-slate-600"
+                  }`} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-900 mb-1">{t(type.label_he, type.label_ar)}</h3>
+                  <p className="text-sm text-slate-600">{t(type.description_he, type.description_ar)}</p>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
