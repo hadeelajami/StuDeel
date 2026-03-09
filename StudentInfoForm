@@ -48,4 +48,73 @@ export default function StudentInfoForm({ data, institutions, faculties, onChang
           <Input
             id="student_email"
             type="email"
- 
+            value={data.student_email || ""}
+            onChange={(e) => onChange({ student_email: e.target.value })}
+            placeholder="student@university.ac.il"
+            className="mt-2"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="student_phone">{t("מספר טלפון", "رقم الهاتف")}</Label>
+          <Input
+            id="student_phone"
+            value={data.student_phone || ""}
+            onChange={(e) => onChange({ student_phone: e.target.value })}
+            placeholder="050-1234567"
+            className="mt-2"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <Label htmlFor="institution">{t("מוסד לימודים", "المؤسسة التعليمية")}</Label>
+            <Select
+              value={data.institution_id || ""}
+              onValueChange={(value) => onChange({ institution_id: String(value), faculty_id: "" })}
+            >
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder={t("בחר מוסד לימודים", "اختر مؤسسة تعليمية")} />
+              </SelectTrigger>
+              <SelectContent>
+                {institutions.map((inst) => (
+                  <SelectItem key={inst.id} value={String(inst.id)}>
+                    <div className="flex items-center gap-2">
+                      {inst.logo_url && <img src={inst.logo_url} alt={t(inst.name_he, inst.name_ar)} className="w-5 h-5 object-contain" />}
+                      <span>{t(inst.name_he, inst.name_ar)}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="faculty">{t("פקולטה", "الكلية")}</Label>
+            <Select
+              key={`faculty-${data.institution_id || 'none'}`}
+              value={data.faculty_id ? String(data.faculty_id) : ""}
+              onValueChange={(value) => onChange({ faculty_id: String(value) })}
+              disabled={!data.institution_id}  // enable as soon as an institution is selected
+            >
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder={t("בחר פקולטה", "اختر الكلية")} />
+              </SelectTrigger>
+              <SelectContent>
+                {faculties.map((fac) => (
+                  <SelectItem key={fac.id} value={String(fac.id)}>
+                    {t(fac.name_he, fac.name_ar)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {data.institution_id && faculties.length === 0 && (
+              <p className="text-xs text-slate-500 mt-2">
+                {t("לא נמצאו פקולטות למוסד זה.", "لم يتم العثور على كليات لهذه المؤسسة.")}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
