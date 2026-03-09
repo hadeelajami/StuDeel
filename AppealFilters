@@ -1,0 +1,28 @@
+import React from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+
+export default function AppealFilters({ currentFilter, onFilterChange, counts, language }) {
+  const t = (he, ar) => language === 'he' ? he : ar;
+  
+  const filters = [
+      { value: "all", label_he: "הכל", label_ar: "الكل" },
+      { value: "draft", label_he: "טיוטות", label_ar: "مسودات" },
+      { value: "submitted", label_he: "הוגשו", label_ar: "مُرسلة" },
+      { value: "approved", label_he: "אושרו", label_ar: "مُوافق عليها" },
+      { value: "rejected", label_he: "נדחו", label_ar: "مرفوضة" },
+  ];
+
+  return (
+    <Tabs value={currentFilter} onValueChange={onFilterChange} className="w-full">
+      <TabsList className="w-full justify-start bg-white/80 backdrop-blur-sm p-1 rounded-xl shadow-sm overflow-x-auto">
+        {filters.map(f => (
+          <TabsTrigger key={f.value} value={f.value} className="rounded-lg flex-shrink-0">
+            {t(f.label_he, f.label_ar)}
+            <Badge variant="secondary" className="mr-2">{counts[f.value]}</Badge>
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
+  );
+}
