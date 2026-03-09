@@ -1,0 +1,82 @@
+
+import React, { useState, useEffect } from "react";
+import { Appeal } from "@/entities/Appeal";
+import { Institution } from "@/entities/Institution";
+import { Faculty } from "@/entities/Faculty";
+import { User } from "@/entities/User";
+import { InvokeLLM } from "@/integrations/Core";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+import ProgressSteps from "../components/appeal/ProgressSteps";
+import AppealTypeSelector from "../components/appeal/AppealTypeSelector";
+import StudentInfoForm from "../components/appeal/StudentInfoForm";
+import AppealDetailsForm from "../components/appeal/AppealDetailsForm";
+import LetterPreview from "../components/appeal/LetterPreview";
+
+export default function NewAppeal({ language = 'he', setLanguage }) {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [institutions, setInstitutions] = useState([]);
+  const [faculties, setFaculties] = useState([]);
+  const [appealData, setAppealData] = useState({
+    appeal_type: "",
+    status: "draft",
+    language: language
+  });
+  const [generatedLetter, setGeneratedLetter] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [currentAppealId, setCurrentAppealId] = useState(null);
+
+  const t = (he, ar) => language === 'he' ? he : ar;
+
+  useEffect(() => {
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    updateAppealData({ language: language });
+  }, [language]);
+
+  const loadInitialData = async () => {
+    const [instData, facData] = await Promise.all([Institution.list(), Faculty.list()]);
+    setInstitutions(instData);
+    setFaculties(facData);
+    try {
+      const user = await User.me();
+      setAppealData(prev => ({ ...prev, student_name: user.full_name, student_email: user.email }));
+    } catch (e) {
+      // Not logged in
+    }
+  };
+
+  const updateAppealData = (updates) => {
+    setAppealData(prev => ({ ...prev, ...updates }));
+  };
+
+  const handleGenerateLetter = async () => {
+    setIsGenerating(true);
+    const institution = institutions.find(i => i.id === appealData.institution_id);
+    const prompt = `
+      Create a formal academic appeal letter in ${appealData.language === 'he' ? 'Hebrew' : 'Arabic'}.
+      Student: ${appealData.student_name}
+      ID: ${appealData.student_id}
+      Institution: ${institution ? (appealData.language === 'he' ? institution.name_he : institution.name_ar) : 'N/A'}
+      Appeal Type: ${appealData.appeal_type}
+      Course: ${appealData.course_name || 'N/A'} (${appealData.course_code || 'N/A'})
+      Semester: ${appealData.semester || 'N/A'}
+      Reason: ${appealData.appeal_reason || 'N/A'}
+      Explanation: ${appealData.detailed_explanation || 'N/A'}
+    `;
+    const response = await InvokeLLM({ prompt });
+    setGeneratedLetter(response);
+    updateAppealData({ generated_letter: response });
+    setIsGenerating(false);
+  };
+  
+  const saveAppeal = async (status = 'draft') => {
+ 
