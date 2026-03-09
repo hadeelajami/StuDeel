@@ -1,0 +1,183 @@
+
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { FileText, Home, Plus, List, Globe } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import ProPanel from "@/components/pro/ProPanel"; // Added import
+
+const navigationItems = [
+  {
+    title_he: "דף הבית",
+    title_ar: "الصفحة الرئيسية",
+    url: createPageUrl("Dashboard"),
+    icon: Home,
+  },
+  {
+    title_he: "ערעור חדש",
+    title_ar: "استئناف جديد",
+    url: createPageUrl("NewAppeal"),
+    icon: Plus,
+  },
+  {
+    title_he: "הערעורים שלי",
+    title_ar: "استئنافاتي",
+    url: createPageUrl("MyAppeals"),
+    icon: List,
+  },
+];
+
+export default function Layout({ children, currentPageName }) {
+  const location = useLocation();
+  const [language, setLanguage] = React.useState('he');
+
+  // Persist language across pages and reloads
+  React.useEffect(() => {
+    const saved = localStorage.getItem('app_lang');
+    if (saved && (saved === 'he' || saved === 'ar')) {
+      setLanguage(saved);
+    }
+  }, []);
+  
+  React.useEffect(() => {
+    localStorage.setItem('app_lang', language);
+  }, [language]);
+
+  const isRTL = language === 'he' || language === 'ar';
+
+  // Pass language to all pages/components
+  const childrenWithProps = React.Children.map(children, child => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, { language, setLanguage });
+    }
+    return child;
+  });
+
+  return (
+    <SidebarProvider>
+      <style>{`
+        :root {
+          --primary: 220 90% 56%;
+          --primary-foreground: 0 0% 100%;
+          --secondary: 180 65% 55%;
+          --accent: 15 85% 65%;
+          --muted: 220 15% 96%;
+        }
+        
+        body {
+          direction: ${isRTL ? 'rtl' : 'ltr'};
+        }
+        
+        * {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+      `}</style>
+      
+      <div className={`min-h-screen flex w-full bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 ${isRTL ? 'rtl' : 'ltr'}`}>
+        <Sidebar side={isRTL ? "right" : "left"} className="border-slate-200 bg-white/80 backdrop-blur-md">
+          <SidebarHeader className="border-b border-slate-200 p-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="font-bold text-xl text-slate-900">StuDeel</h2>
+                <p className="text-xs text-slate-500">
+                  {language === 'he' ? 'פלטפורמת ערעורים אקדמיים' : 'منصة الاستئنافات الأكاديمية'}
+                </p>
+              </div>
+            </div>
+          </SidebarHeader>
+          
+          <SidebarContent className="p-3">
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {navigationItems.map((item) => (
+                    <SidebarMenuItem key={item.url}>
+                      <SidebarMenuButton 
+                        asChild 
+                        className={`hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 rounded-xl mb-2 ${
+                          location.pathname === item.url ? 'bg-blue-50 text-blue-700 shadow-sm' : ''
+                        }`}
+                      >
+                        <Link to={item.url} className="flex items-center gap-3 px-4 py-3">
+                          <item.icon className="w-5 h-5" />
+                          <span className="font-medium">{language === 'he' ? item.title_he : item.title_ar}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+
+          <SidebarFooter className="border-t border-slate-200 p-4">
+            {/* You can add other footer content here if needed */}
+          </SidebarFooter>
+        </Sidebar>
+
+        <main className="flex-1 flex flex-col relative"> {/* Added 'relative' to main */}
+          {/* Floating language toggle (desktop too) */}
+          <div className={`fixed top-4 ${isRTL ? 'left-4' : 'right-4'} z-50`}>
+            <button
+              onClick={() => setLanguage(language === 'he' ? 'ar' : 'he')}
+              className="px-3 py-2 text-sm rounded-lg bg-white/90 backdrop-blur border border-slate-200 shadow hover:bg-slate-50"
+              title={language === 'he' ? 'العربية' : 'עברית'}
+            >
+              {language === 'he' ? 'العربية' : 'עברית'}
+            </button>
+          </div>
+
+          {/* Fixed Pro panel (desktop and up) */}
+          <div
+            className="hidden lg:block z-40"
+            style={{
+              position: "fixed",
+              top: "80px",
+              bottom: "24px",
+              right: isRTL ? "320px" : "16px", // Positioned relative to the right edge
+              width: "300px",
+            }}
+          >
+            <ProPanel language={language} />
+          </div>
+
+          {/* Mobile CTA to Pro */}
+          <div className="lg:hidden fixed bottom-4 right-4 z-40">
+            <Link to={createPageUrl("PremiumConsultation")} className="block">
+              <button className="px-4 py-2 rounded-full bg-amber-600 text-white shadow-lg">
+                {language === 'he' ? 'Pro' : 'Pro'}
+              </button>
+            </Link>
+          </div>
+
+          <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 md:hidden">
+            <div className="flex items-center gap-4">
+              <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors duration-200" />
+              <h1 className="text-xl font-bold text-slate-900">StuDeel</h1>
+            </div>
+          </header>
+
+          {/* Page content area with space for the right panel */}
+          <div className={`flex-1 overflow-auto lg:pr-[320px]`}> {/* Added lg:pr-[320px] for spacing */}
+            {childrenWithProps}
+          </div>
+        </main>
+      </div>
+    </SidebarProvider>
+  );
+}
